@@ -19,6 +19,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	// Define a slice containing the file paths for the base layout and home page templates
 	files := []string{
 		"./ui/html/pages/base.tmpl",
+		"./ui/html/partials/nav.tmpl",
 		"./ui/html/pages/home.tmpl",
 	}
 
@@ -39,6 +40,8 @@ func home(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// snippetView is the handler function for the "/snippet/view" URL.
+// It displays a specific snippet based on an ID provided in the query string.
 func snippetView(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
@@ -48,11 +51,15 @@ func snippetView(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Display a specific snippet with an id %d", id)
 }
 
+// snippetCreate is the handler function for the "/snippet/create" URL.
+// It handles the creation of new snippets.
 func snippetCreate(w http.ResponseWriter, r *http.Request) {
+	// Check if the request method is POST, otherwise return a "Method Not Allowed" error.
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", http.MethodPost)
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+	// If the request method is POST, create a new snippet.
 	w.Write([]byte("Create new snippet..."))
 }
