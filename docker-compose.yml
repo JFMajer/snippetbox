@@ -1,0 +1,14 @@
+services:
+  db:
+    image: mariadb:lts-jammy
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+  snippetbox:
+    image: snippetbox:latest
+    ports:
+      - "4000:4000"
