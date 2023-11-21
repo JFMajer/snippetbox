@@ -20,6 +20,6 @@ INSERT INTO snippets (title, content, created, expires) VALUES
 ('Fourth snippet', 'Fourth snippet content goes here.', NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY)),
 ('Fifth snippet', 'And this is the fifth snippet.', NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY));
 
-CREATE USER 'web'@'localhost';
-GRANT SELECT, INSERT, UPDATE, DELETE ON snippetbox.* TO 'web'@'localhost';
-ALTER USER 'web'@'localhost' IDENTIFIED BY 'pass';
+CREATE USER 'web'@'%';
+GRANT SELECT, INSERT, UPDATE, DELETE ON snippetbox.* TO 'web'@'%';
+ALTER USER 'web'@'%' IDENTIFIED BY 'pass';
