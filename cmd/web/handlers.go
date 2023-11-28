@@ -1,10 +1,14 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+
 	"html/template"
 	"net/http"
 	"strconv"
+
+	"snippetbox.heheszlo.com/internal/models"
 )
 
 // home is the handler function for the root URL ("/").
@@ -15,26 +19,35 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	snippets, err := app.snippets.Latest()
+	if err != nil {
+		app.serverError(w, err)
+	}
+
+	for _, snippet := range snippets {
+		fmt.Fprintf(w, "%+v\n", snippet)
+	}
+
 	// Define a slice containing the file paths for the base layout and home page templates
-	files := []string{
-		"./ui/html/pages/base.tmpl",
-		"./ui/html/partials/nav.tmpl",
-		"./ui/html/pages/home.tmpl",
-	}
+	// files := []string{
+	// 	"./ui/html/pages/base.tmpl",
+	// 	"./ui/html/partials/nav.tmpl",
+	// 	"./ui/html/pages/home.tmpl",
+	// }
 
-	// Use the template.ParseFiles function to read the template files and store the templates in 'ts'
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
+	// // Use the template.ParseFiles function to read the template files and store the templates in 'ts'
+	// ts, err := template.ParseFiles(files...)
+	// if err != nil {
+	// 	app.serverError(w, err)
+	// 	return
+	// }
 
-	// Execute the template, writing the generated HTML to the http.ResponseWriter.
-	// The "base" template is used as the 'layout' template.
-	err = ts.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	// // Execute the template, writing the generated HTML to the http.ResponseWriter.
+	// // The "base" template is used as the 'layout' template.
+	// err = ts.ExecuteTemplate(w, "base", nil)
+	// if err != nil {
+	// 	app.serverError(w, err)
+	// }
 }
 
 // snippetView is the handler function for the "/snippet/view" URL.
@@ -45,7 +58,34 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		app.notFound(w)
 		return
 	}
-	fmt.Fprintf(w, "Display a specific snippet with an id %d", id)
+	
+	
+	snippet, err := app.snippets.Get(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+	
+	files := []string{
+		"./ui/html/pages/base.tmpl",
+		"./ui/html/partials/nav.tmpl",
+		"./ui/html/pages/view.tmpl",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	err = ts.ExecuteTemplate(w, "base", snippet)
+	if err != nil {
+		app.serverError(w, err)
+	}
 }
 
 // snippetCreate is the handler function for the "/snippet/create" URL.
