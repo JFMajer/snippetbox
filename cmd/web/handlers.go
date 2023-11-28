@@ -62,7 +62,7 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	
 	// dummy data will be removed later
 	title := "O snail"
-	content := "O snal\nClimb Mount Fuji,\nBut slowly, slowly!\n\n- Kobayashi Issa"
+	content := "O snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n- Kobayashi Issa"
 	expires := 7
 
 	id, err := app.snippets.Insert(title, content, expires)
