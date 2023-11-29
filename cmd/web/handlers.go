@@ -22,32 +22,34 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	snippets, err := app.snippets.Latest()
 	if err != nil {
 		app.serverError(w, err)
+		return
 	}
 
-	for _, snippet := range snippets {
-		fmt.Fprintf(w, "%+v\n", snippet)
-	}
 
 	// Define a slice containing the file paths for the base layout and home page templates
-	// files := []string{
-	// 	"./ui/html/pages/base.tmpl",
-	// 	"./ui/html/partials/nav.tmpl",
-	// 	"./ui/html/pages/home.tmpl",
-	// }
+	files := []string{
+		"./ui/html/pages/base.tmpl",
+		"./ui/html/partials/nav.tmpl",
+		"./ui/html/pages/home.tmpl",
+	}
 
-	// // Use the template.ParseFiles function to read the template files and store the templates in 'ts'
-	// ts, err := template.ParseFiles(files...)
-	// if err != nil {
-	// 	app.serverError(w, err)
-	// 	return
-	// }
+	// Use the template.ParseFiles function to read the template files and store the templates in 'ts'
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 
-	// // Execute the template, writing the generated HTML to the http.ResponseWriter.
-	// // The "base" template is used as the 'layout' template.
-	// err = ts.ExecuteTemplate(w, "base", nil)
-	// if err != nil {
-	// 	app.serverError(w, err)
-	// }
+	data := &templateData{
+		Snippets: snippets,
+	}
+
+	// Execute the template, writing the generated HTML to the http.ResponseWriter.
+	// The "base" template is used as the 'layout' template.
+	err = ts.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		app.serverError(w, err)
+	}
 }
 
 // snippetView is the handler function for the "/snippet/view" URL.
@@ -82,7 +84,11 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = ts.ExecuteTemplate(w, "base", snippet)
+	data:= &templateData{
+		Snippet: snippet,
+	}
+
+	err = ts.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		app.serverError(w, err)
 	}
