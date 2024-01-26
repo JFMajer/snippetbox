@@ -14,7 +14,7 @@ import (
 
 type application struct {
 	errorLog *log.Logger
-	infoLog *log.Logger
+	infoLog  *log.Logger
 	snippets *model.SnippetModel
 }
 
@@ -34,24 +34,24 @@ func main() {
 
 	err = db.Ping()
 	if err != nil {
-        log.Fatalf("Error connecting to the database: %v", err)
-    }
+		log.Fatalf("Error connecting to the database: %v", err)
+	}
+
+	infoLog.Println("Successfully connected to the database")
 
 	app := &application{
 		errorLog: errorLog,
-		infoLog: infoLog,
+		infoLog:  infoLog,
 		snippets: &model.SnippetModel{DB: db},
 	}
 
-	
 	flag.Parse()
 
 	srv := &http.Server{
-		Addr: *addr,
+		Addr:     *addr,
 		ErrorLog: errorLog,
-		Handler: app.routes(),
+		Handler:  app.routes(),
 	}
-	
 
 	infoLog.Printf("starting server on port %s", *addr)
 	err = srv.ListenAndServe()
