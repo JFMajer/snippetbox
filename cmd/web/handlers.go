@@ -25,7 +25,6 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	// Define a slice containing the file paths for the base layout and home page templates
 	files := []string{
 		"./ui/html/pages/base.tmpl",
@@ -60,8 +59,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		app.notFound(w)
 		return
 	}
-	
-	
+
 	snippet, err := app.snippets.Get(id)
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecord) {
@@ -71,7 +69,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	
+
 	files := []string{
 		"./ui/html/pages/base.tmpl",
 		"./ui/html/partials/nav.tmpl",
@@ -84,7 +82,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data:= &templateData{
+	data := &templateData{
 		Snippet: snippet,
 	}
 
@@ -104,8 +102,7 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// If the request method is POST, create a new snippet.
-	
-	
+
 	// dummy data will be removed later
 	title := "O snail"
 	content := "O snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n- Kobayashi Issa"
