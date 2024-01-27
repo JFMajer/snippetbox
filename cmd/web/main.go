@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -13,9 +14,10 @@ import (
 )
 
 type application struct {
-	errorLog *log.Logger
-	infoLog  *log.Logger
-	snippets *model.SnippetModel
+	errorLog      *log.Logger
+	infoLog       *log.Logger
+	snippets      *model.SnippetModel
+	templateCache map[string]*template.Template
 }
 
 func main() {
@@ -32,6 +34,11 @@ func main() {
 	}
 	defer db.Close()
 
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+
 	err = db.Ping()
 	if err != nil {
 		log.Fatalf("Error connecting to the database: %v", err)
@@ -40,9 +47,10 @@ func main() {
 	infoLog.Println("Successfully connected to the database")
 
 	app := &application{
-		errorLog: errorLog,
-		infoLog:  infoLog,
-		snippets: &model.SnippetModel{DB: db},
+		errorLog:      errorLog,
+		infoLog:       infoLog,
+		snippets:      &model.SnippetModel{DB: db},
+		templateCache: templateCache,
 	}
 
 	flag.Parse()
