@@ -8,17 +8,13 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"snippetbox.heheszlo.com/internal/models"
 )
 
 // home is the handler function for the root URL ("/").
 // It serves the home page of the web application.
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		app.notFound(w)
-		return
-	}
-
 	snippets, err := app.snippets.Latest()
 	if err != nil {
 		app.serverError(w, err)
@@ -54,7 +50,9 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 // snippetView is the handler function for the "/snippet/view" URL.
 // It displays a specific snippet based on an ID provided in the query string.
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	app.infoLog.Printf("Handling snippetView for %s", r.URL.Path)
+	snippetId := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(snippetId)
 	if err != nil || id < 1 {
 		app.notFound(w)
 		return
@@ -114,5 +112,9 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/snippet/view?id=%d", id), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
+}
+
+func (app *application) snippetCreateForm(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("display snippet creation form..."))
 }

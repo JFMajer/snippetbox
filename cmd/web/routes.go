@@ -27,11 +27,12 @@ func (app *application) routes() http.Handler {
 	mux.Use(middleware.Heartbeat("/ping"))
 
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
+	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
-	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
-	mux.HandleFunc("/", app.home)
-	mux.HandleFunc("/snippet/view", app.snippetView)
-	mux.HandleFunc("/snippet/create", app.snippetCreate)
+	mux.Get("/", app.home)
+	mux.Get("/snippet/view/{id}", app.snippetView)
+	mux.Post("/snippet/create", app.snippetCreate)
+	mux.Get("/snippet/create", app.snippetCreateForm)
 
 	return mux
 }
