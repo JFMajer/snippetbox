@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 
 	"net/http"
 	"strconv"
@@ -20,9 +19,10 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, http.StatusOK, "home.tmpl", &templateData{
-		Snippets: snippets,
-	})
+	data := app.newTemplateData(r)
+	data.Snippets = snippets
+
+	app.render(w, http.StatusOK, "home.tmpl", data)
 }
 
 // snippetView is the handler function for the "/snippet/view" URL.
@@ -46,36 +46,16 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, http.StatusOK, "view.tmpl", &templateData{
-		Snippet: snippet,
-	})
+	data := app.newTemplateData(r)
+	data.Snippet = snippet
+
+	app.render(w, http.StatusOK, "view.tmpl", data)
 }
 
 // snippetCreate is the handler function for the "/snippet/create" URL.
 // It handles the creation of new snippets.
-func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
-	// Check if the request method is POST, otherwise return a "Method Not Allowed" error.
-	if r.Method != http.MethodPost {
-		w.Header().Set("Allow", http.MethodPost)
-		app.clientError(w, http.StatusMethodNotAllowed)
-		return
-	}
-	// If the request method is POST, create a new snippet.
-
-	// dummy data will be removed later
-	title := "O snail"
-	content := "O snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n- Kobayashi Issa"
-	expires := 7
-
-	id, err := app.snippets.Insert(title, content, expires)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
-}
-
 func (app *application) snippetCreateForm(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("display snippet creation form..."))
+	data := app.newTemplateData(r)
+
+	app.render(w, http.StatusOK, "create.tmpl", data)
 }

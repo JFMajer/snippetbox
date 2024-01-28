@@ -31,7 +31,7 @@ func (app *application) routes() http.Handler {
 
 	mux.Get("/", app.home)
 	mux.Get("/snippet/view/{id}", app.snippetView)
-	mux.Post("/snippet/create", app.snippetCreate)
+	//mux.Post("/snippet/create", app.snippetCreate)
 	mux.Get("/snippet/create", app.snippetCreateForm)
 
 	return mux
